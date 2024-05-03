@@ -13,7 +13,7 @@ data = cbind(imported, fold_assn)
 metrics = c()
 for (f in c('fold1', 'fold2', 'fold3', 'fold4', 'fold5')){
   
-  datasets = fold_ttsplit(data, "FloodProbability", f)
+  datasets = fold_ttsplit(data, f)
   print('datasets created')
   
   mod = lm(FloodProbability ~ ., datasets[[1]])
