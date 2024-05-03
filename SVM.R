@@ -5,40 +5,29 @@ setwd('C:/Users/clark/Documents/GitHub/kaggle-floods')
 
 imported = read_csv('train.csv')
 
+# 5 fold CV
 
-## try regression mode on two dimensions
+# divide into 5 folds
+fold_assn = sample(c('fold1', 'fold2', 'fold3', 'fold4', 'fold5'), nrow(imported), replace=TRUE)
+data = cbind(imported, fold_assn)
+rm(fold_assn)
 
-# create data
-X <- imported %>% select(!c(id, FloodProbability))
-y <- imported$FloodProbability
+# use folds to create train and test
+datasets = data %>% 
+  select(!id) %>% 
+  fold_ttsplit("fold1")
 
-# estimate modFloodProbability# estimate model and predict input values
-m   <- svm(x, y)
-new <- predict(m, x)
+# fit  
+m = svm(FloodProbability ~ ., data = datasets[[2]], kernel = "linear", cost = 10, scale = FALSE)
 
-# visualize
-plot(x, y)
-points(x, log(x), col = 2)
-points(x, new, col = 4)
+# predict
+Xval = datasets[[1]] %>% select(!FloodProbability)
+yhat <- predict(m, Xval)
 
-## density-estimation
-
-# create 2-dim. normal with rho=0:
-X <- data.frame(a = rnorm(1000), b = rnorm(1000))
-attach(X)
-
-# traditional way:
-m <- svm(X, gamma = 0.1)
-
-# formula interface:
-m <- svm(~., data = X, gamma = 0.1)
-# or:
-m <- svm(~ a + b, gamma = 0.1)
-
-# test:
-newdata <- data.frame(a = c(0, 4), b = c(0, 4))
-predict (m, newdata)
-
-# visualize:
-plot(X, col = 1:1000 %in% m$index + 1, xlim = c(-5,5), ylim=c(-5,5))
-points(newdata, pch = "+", col = 2, cex = 5)
+ybar = mean(datasets[[2]]$FloodProbability)
+results = cbind(y = datasets[[2]]$FloodProbability, yhat) %>% 
+  as.data.frame() %>% 
+  mutate(sq_error = (y-yhat)^2,
+         sq_ref = (y-ybar)^2)
+R2 = 1 - (sum(results$sq_error) / sum(results$sq_ref))
+print('R2 calculated')
