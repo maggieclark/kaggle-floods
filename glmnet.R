@@ -5,13 +5,6 @@ setwd('C:/Users/clark/Documents/GitHub/kaggle-floods')
 
 imported = read_csv('train.csv')
 
-# determine whether regularization is necessary
-# actually not really
-cor(imported)
-
-# determine shape of outcome data
-hist(imported$FloodProbability)
-
 # CV to determine best lambda
 X = imported %>% select(!c(FloodProbability, id)) %>% as.matrix()
 y = imported %>% select(FloodProbability) %>% as.matrix()
