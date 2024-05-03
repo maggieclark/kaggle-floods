@@ -16,7 +16,7 @@ hist(imported$FloodProbability)
 X = imported %>% select(!c(FloodProbability, id)) %>% as.matrix()
 y = imported %>% select(FloodProbability) %>% as.matrix()
 
-### gaussian, standardize ###
+### elastic net, gaussian, standardize ###
 # note y is standardized to unit variance using 1/n
 ingredients = cv.glmnet(X, 
                         y, 
@@ -52,7 +52,7 @@ for (i in 1:10){
 mean(R2s) # 0.8449016
 
 
-### gaussian, non-standardized ###
+### elastic net, gaussian, non-standardized ###
 # note y is standardized to unit variance using 1/n
 ingredients = cv.glmnet(X, 
                         y, 
@@ -124,7 +124,7 @@ for (i in 1:10){
 mean(R2s) # 0.8449012
 
 
-### strict lasso, gaussian, standardized ###
+### strict lasso, gaussian, standardized ### *********
 # note y is standardized to unit variance using 1/n
 
 ingredients = cv.glmnet(X, 
@@ -134,7 +134,7 @@ ingredients = cv.glmnet(X,
                         standardize = TRUE,
                         keep = TRUE)
 
-# index of best lambda
+# index of best lambda (lambda.min)
 idx = ingredients$index[1]
 
 # calculate R2
@@ -159,8 +159,20 @@ for (i in 1:10){
 }
 
 # validation error
-mean(R2s) # 0.8449059
+mean(R2s) # 0.8449059 # ***
 
+# predict (from best CV model - on 90%)
+test_imported = read_csv('test.csv')
+testset = test_imported %>% select(!id) %>% as.matrix()
+
+final_yhat = predict(
+  object = ingredients,
+  testset,
+  s = "lambda.min")
+
+submission = cbind(test_imported$id, final_yhat) %>% as.data.frame()
+names(submission) <- c('id', 'FloodProbability')
+write_csv(submission, 'submission_5.3.csv')
 
 ### strict ridge, gaussian, standardized ###
 # note y is standardized to unit variance using 1/n
@@ -198,3 +210,7 @@ for (i in 1:10){
 
 # validation error
 mean(R2s) # 0.8444889
+
+
+### linear regression ###
+
