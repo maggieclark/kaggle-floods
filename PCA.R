@@ -6,5 +6,8 @@ imported = read_csv('train.csv')
 
 # PCA
 
+X = imported %>% select(!c(FloodProbability, id))
+y = imported %>% select(FloodProbability)
 
-# linear model
+PCs = prcomp(X, scale = TRUE)
+PCs$sdev^2 / sum(PCs$sdev^2) # first PC only explains 5% of variance :(
