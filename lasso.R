@@ -212,5 +212,77 @@ for (i in 1:10){
 mean(R2s) # 0.8444889
 
 
-### linear regression ###
+### elastic net, lambda.1se, gaussian, standardized ###
+# note y is standardized to unit variance using 1/n
+ingredients = cv.glmnet(
+  X, 
+  y, 
+  family="gaussian", 
+  standardize=TRUE,
+  keep = TRUE
+  )
 
+# calculate R2
+
+# index of best lambda
+idx = ingredients$index[2]
+
+# prevalidated array - contains y_hat from 10 folds using best lambda
+y_mean = mean(y)
+
+preval = cbind(y_hat = ingredients$fit.preval[,idx], 
+               fold = ingredients$foldid,
+               FloodProbability = y) %>% 
+  as.data.frame() %>% 
+  mutate(sq_error = (FloodProbability-y_hat)^2,
+         sq_ref = (FloodProbability-y_mean)^2)
+
+# loop through folds and calculate 10 kaggle-errors
+R2s <- c()
+
+for (i in 1:10){
+  fold_dataset = preval %>% filter(fold == i) 
+  R2 = 1 - (sum(fold_dataset$sq_error) / sum(fold_dataset$sq_ref))
+  R2s = c(R2s, R2)
+}
+
+# validation error
+mean(R2s) # 0.8445797
+
+
+### elastic net, lambda.1se, gaussian, non-standardized ###
+# note y is standardized to unit variance using 1/n
+ingredients = cv.glmnet(
+  X, 
+  y, 
+  family="gaussian", 
+  standardize=TRUE,
+  keep = TRUE
+)
+
+# calculate R2
+
+# index of best lambda
+idx = ingredients$index[2]
+
+# prevalidated array - contains y_hat from 10 folds using best lambda
+y_mean = mean(y)
+
+preval = cbind(y_hat = ingredients$fit.preval[,idx], 
+               fold = ingredients$foldid,
+               FloodProbability = y) %>% 
+  as.data.frame() %>% 
+  mutate(sq_error = (FloodProbability-y_hat)^2,
+         sq_ref = (FloodProbability-y_mean)^2)
+
+# loop through folds and calculate 10 kaggle-errors
+R2s <- c()
+
+for (i in 1:10){
+  fold_dataset = preval %>% filter(fold == i) 
+  R2 = 1 - (sum(fold_dataset$sq_error) / sum(fold_dataset$sq_ref))
+  R2s = c(R2s, R2)
+}
+
+# validation error
+mean(R2s) # 0.8445797
