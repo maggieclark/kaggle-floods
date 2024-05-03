@@ -16,7 +16,7 @@ hist(imported$FloodProbability)
 X = imported %>% select(!c(FloodProbability, id)) %>% as.matrix()
 y = imported %>% select(FloodProbability) %>% as.matrix()
 
-### elastic net, gaussian, standardize ###
+### elastic net, lambda.min, gaussian, standardize ###
 # note y is standardized to unit variance using 1/n
 ingredients = cv.glmnet(X, 
                         y, 
@@ -52,7 +52,7 @@ for (i in 1:10){
 mean(R2s) # 0.8449016
 
 
-### elastic net, gaussian, non-standardized ###
+### elastic net, lambda.min, gaussian, non-standardized ###
 # note y is standardized to unit variance using 1/n
 ingredients = cv.glmnet(X, 
                         y, 
@@ -87,7 +87,7 @@ for (i in 1:10){
 mean(R2s) # 0.8449032
 
 
-### strict lasso, gaussian, non-standardized ###
+### strict lasso, lambda.min, gaussian, non-standardized ###
 # note y is standardized to unit variance using 1/n
 
 ingredients = cv.glmnet(X, 
@@ -124,7 +124,7 @@ for (i in 1:10){
 mean(R2s) # 0.8449012
 
 
-### strict lasso, gaussian, standardized ### *********
+### strict lasso, lambda.min, gaussian, standardized ### *********
 # note y is standardized to unit variance using 1/n
 
 ingredients = cv.glmnet(X, 
@@ -174,7 +174,7 @@ submission = cbind(test_imported$id, final_yhat) %>% as.data.frame()
 names(submission) <- c('id', 'FloodProbability')
 write_csv(submission, 'submission_5.3.csv')
 
-### strict ridge, gaussian, standardized ###
+### strict ridge, lambda.min, gaussian, standardized ###
 # note y is standardized to unit variance using 1/n
 
 ingredients = cv.glmnet(X, 
@@ -256,7 +256,7 @@ ingredients = cv.glmnet(
   X, 
   y, 
   family="gaussian", 
-  standardize=TRUE,
+  standardize=FALSE,
   keep = TRUE
 )
 
@@ -285,4 +285,4 @@ for (i in 1:10){
 }
 
 # validation error
-mean(R2s) # 0.8445797
+mean(R2s) # 0.8447976
