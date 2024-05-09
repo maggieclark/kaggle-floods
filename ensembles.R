@@ -18,11 +18,17 @@ write_csv(yhatavg, 'C:/Users/clark/Documents/GitHub/kaggle-floods/submissions/nn
 
 min(yhatnn$FloodProbability)
 min(yhatlasso$FloodProbability)
-
 yhatpw = df %>% 
   mutate(FloodProbability = ifelse(FloodProbability.lasso < 0.3811388,
                                    FloodProbability.lasso, 
                                    FloodProbability.nn)) %>% 
   select(c(id, FloodProbability))
-
 write_csv(yhatpw, 'C:/Users/clark/Documents/GitHub/kaggle-floods/submissions/nn_lasso_pw1_5.9.csv')
+
+sum(yhatlasso$FloodProbability < 0.325)
+yhatpw2 = df %>% 
+  mutate(FloodProbability = ifelse(FloodProbability.lasso < 0.325,
+                                   FloodProbability.lasso, 
+                                   FloodProbability.nn)) %>% 
+  select(c(id, FloodProbability))
+write_csv(yhatpw2, 'C:/Users/clark/Documents/GitHub/kaggle-floods/submissions/nn_lasso_pw2_5.9.csv')
