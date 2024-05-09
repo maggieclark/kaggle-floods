@@ -173,6 +173,9 @@ write_csv(submission, 'submission_5.3.csv')
 # examine features selected
 ingredients$glmnet.fit$beta[,idx]
 
+# examine errors
+plot(preval$y_hat, preval$FloodProbability)
+
 
 
 ### strict ridge, lambda.min, gaussian, standardized ###
