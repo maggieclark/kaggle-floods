@@ -44,6 +44,9 @@ for (i in 1:10){
 # validation error
 mean(R2s) # 0.8449016
 
+# examine features selected
+ingredients$glmnet.fit$beta[,idx]
+
 
 ### elastic net, lambda.min, gaussian, non-standardized ###
 # note y is standardized to unit variance using 1/n
@@ -167,6 +170,11 @@ submission = cbind(test_imported$id, final_yhat) %>% as.data.frame()
 names(submission) <- c('id', 'FloodProbability')
 write_csv(submission, 'submission_5.3.csv')
 
+# examine features selected
+ingredients$glmnet.fit$beta[,idx]
+
+
+
 ### strict ridge, lambda.min, gaussian, standardized ###
 # note y is standardized to unit variance using 1/n
 
@@ -203,6 +211,9 @@ for (i in 1:10){
 
 # validation error
 mean(R2s) # 0.8444889
+
+# examine features selected
+ingredients$glmnet.fit$beta[,idx]
 
 
 ### elastic net, lambda.1se, gaussian, standardized ###
